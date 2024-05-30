@@ -5,31 +5,35 @@ import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.symbols.Symbol;
 import org.sonar.plugins.python.api.tree.*;
-import org.sonar.python.tree.StringElementImpl;
 import org.sonar.python.tree.StringLiteralImpl;
 import org.sonar.python.tree.TreeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 @Rule(key = "EC1000")
 public class AvoidBasicRegexUsagesCheck extends PythonSubscriptionCheck{
 
-    public static final String MESSAGE_RULE = "Use startswith instead of re.";
     private static final Map<String, Integer> REGEX_FUNCTIONS_TO_FLAG_PARAM = new HashMap<>();
 
-    private static final Pattern PATTERN = Pattern.compile("^r?['\\\"]\\^");
+    public static final String MESSAGE_RULE_FOR_START_WITH = "Use startswith instead of regex";
+    public static final String MESSAGE_RULE_FOR_ENDS_WITH = "Use endsWith instead of regex";
+
+    private static final Pattern PATTERN_STARTS_WITH_FIND = Pattern.compile("^r?['\\\"](?:\\^|\\\\A)(.+)['\\\"]$");
+    private static final Pattern PATTERN_SPECIAL_CHARS = Pattern.compile("[^\\\\][.+*^$?]");
+    private static final Pattern PATTERN_ENDS_WITH = Pattern.compile("^r?['\\\"](.+)(?:\\$|\\\\Z)['\\\"]$");
 
     static {
-        REGEX_FUNCTIONS_TO_FLAG_PARAM.put("re.compile", 1);
-        REGEX_FUNCTIONS_TO_FLAG_PARAM.put("re.search", 2);
-        REGEX_FUNCTIONS_TO_FLAG_PARAM.put("re.match", 2);
+        REGEX_FUNCTIONS_TO_FLAG_PARAM.put("re.compile", 0);
+        REGEX_FUNCTIONS_TO_FLAG_PARAM.put("re.search", 0);
+        REGEX_FUNCTIONS_TO_FLAG_PARAM.put("re.match", 0);
     }
 
     /**
-     * Should return a map whose keys are the functions the check is interested in, and the values are the position of the flags parameter.
+     * Should return a map whose keys are the functions the check is interested in
      * Set the position of the flags parameter to {@code null} if there is none.
      */
     protected Map<String, Integer> lookedUpFunctions() {
@@ -54,20 +58,21 @@ public class AvoidBasicRegexUsagesCheck extends PythonSubscriptionCheck{
             Expression patternArgument = TreeUtils.nthArgumentOrKeyword(0, "pattern", callExpression.arguments()).expression();
             if (patternArgument != null && patternArgument.is(Tree.Kind.STRING_LITERAL)) {
                 StringElement stringElement = ((StringLiteralImpl) patternArgument).stringElements().get(0);
-                checkIssue(stringElement, ctx);
+                checkAndReportIssue(stringElement, ctx);
             }
-
-        }
-
-    }
-
-    private void checkIssue(StringElement stringElement, SubscriptionContext ctx) {
-        if (PATTERN.matcher(stringElement.value()).find()) {
-            reportIssue(stringElement, ctx);
         }
     }
 
-    private void reportIssue(StringElement stringElement, SubscriptionContext ctx) {
-        ctx.addIssue(stringElement, MESSAGE_RULE);
+    private void checkAndReportIssue(StringElement stringElement, SubscriptionContext ctx) {
+        Matcher matcher = PATTERN_STARTS_WITH_FIND.matcher(stringElement.value());
+        if (matcher.find()) {
+            String s = matcher.group(1);
+            if (!PATTERN_SPECIAL_CHARS.matcher(s).find()) {
+                ctx.addIssue(stringElement, MESSAGE_RULE_FOR_START_WITH);
+            }
+        }
+        else if (PATTERN_ENDS_WITH.matcher(stringElement.value()).find()) {
+            ctx.addIssue(stringElement, MESSAGE_RULE_FOR_ENDS_WITH);
+        }
     }
 }
