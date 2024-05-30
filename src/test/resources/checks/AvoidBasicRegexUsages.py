@@ -6,72 +6,72 @@ string = 'abc.txt'
 
 # re.search()
 
-# if re.search(r'^abc', string):   # Noncompliant {{Use startswith instead of re.search}}
+# if re.search(r'^abc', string):   # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
-# if re.search(r'^abc\.txt', string):   # Noncompliant {{Use startswith instead of re.search}}
+# if re.search(r'^abc\.txt', string):   # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc.txt')
 
 # if re.search(r'^...txt', string):   # Compliant
 #     print('string starts with pattern ???txt')
 
-# if re.search(r'^abc\*', string):   # Noncompliant {{Use string.startswith instead of re.search}}
+# if re.search(r'^abc\*', string):   # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with the text "abc*"')
 
 # if re.search(r'^abc*', string):   # Compliant
 #     print('string starts with pattern')
 
-# if re.search(r'^abc\+', string):   # Noncompliant {{Use string.startswith instead of re.search}}
+# if re.search(r'^abc\+', string):   # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with the text "abc+"')
 
 # if re.search(r'^abc+', string):   # Compliant
 #     print('string starts with pattern')
 
-if re.search('^abc', string):    # Noncompliant {{Use startswith instead of re.search}}
-    print('string starts with abc')
+#if re.search('^abc', string):    # Noncompliant {{Use startswith instead of regex}}
+#    print('string starts with abc')
 
-# if re.search(r'\Aabc', string):  # Noncompliant {{Use string.startswith instead of re.search}}
+# if re.search(r'\Aabc', string):  # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
-# if re.search('\\Aabc', string):  # Noncompliant {{Use string.startswith instead of re.search}}
+# if re.search('\\Aabc', string):  # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
 # # re.match()
 
-# if re.match(r'^abc', string):    # Noncompliant {{Use string.startswith instead of re.match}}
+if re.match(r'^abc', string):    # Noncompliant {{Use startswith instead of regex}}
+    print('string starts with abc')
+
+# if re.match('^abc', string):     # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
-# if re.match('^abc', string):     # Noncompliant {{Use string.startswith instead of re.match}}
+# if re.match(r'\Aabc', string):   # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
-# if re.match(r'\Aabc', string):   # Noncompliant {{Use string.startswith instead of re.match}}
-#     print('string starts with abc')
-
-# if re.match('\\Aabc', string):   # Noncompliant {{Use string.startswith instead of re.match}}
+# if re.match('\\Aabc', string):   # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
 # # re.match() matches *only* at the beginning of the string, therefore the pattern 'abc' produce the same result as '^abc' or '\Aabc'
-# if re.match(r'abc', string):     # Noncompliant {{Use string.startswith instead of re.match}}
+# if re.match(r'abc', string):     # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
-# if re.match('abc', string):      # Noncompliant {{Use string.startswith instead of re.match}}
+# if re.match('abc', string):      # Noncompliant {{Use startswith instead of regex}}
 #     print('string starts with abc')
 
 # # re.compile()
 
-# pattern = re.compile(r'^abc')         # Noncompliant {{Use string.startswith instead}}
-# pattern = re.compile('^abc')          # Noncompliant {{Use string.startswith instead}}
-# pattern = re.compile(r'\Aabc')        # Noncompliant {{Use string.startswith instead}}
-# pattern = re.compile('\\Aabc')        # Noncompliant {{Use string.startswith instead}}
-# pattern = re.compile(r'\Aabc\.txt')   # Noncompliant {{Use string.startswith instead}}
-# pattern = re.compile('\\Aabc\*')      # Noncompliant {{Use string.startswith instead}}
-# pattern = re.compile('^C\+\+')        # Noncompliant {{Use string.startswith instead}}
+# pattern = re.compile(r'^abc')         # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile('^abc')          # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile(r'\Aabc')        # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile('\\Aabc')        # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile(r'\Aabc\.txt')   # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile('\\Aabc\*')      # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile('^C\+\+')        # Noncompliant {{Use startswith instead of regex}}
 # pattern = re.compile('^C\++')         # Compliant
 # if pattern.search(string):
 #     print('string starts with abc')
 
-# pattern = re.compile(r'abc')     # Noncompliant {{Use string.startswith or in operator instead}}
-# pattern = re.compile('abc')      # Noncompliant {{Use string.startswith or in operator instead}}
+# pattern = re.compile(r'abc')     # Noncompliant {{Use startswith instead of regex}}
+# pattern = re.compile('abc')      # Noncompliant {{Use startswith instead of regex}}
 # if pattern.match(string):
 #     print('string starts with abc')
 
